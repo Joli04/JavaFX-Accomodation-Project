@@ -22,6 +22,12 @@ public class Lodge extends Accommodatie implements Identifable, Serializable {
         this.autoHuren = autoHuren;
     }
 
+    public Lodge(String accommodatieCode, double prijsPerWeek, boolean autoHuren){
+        super(accommodatieCode);
+        this.prijsPerWeek = prijsPerWeek;
+        this.autoHuren = autoHuren;
+    }
+
     public double getPrijsPerWeek() {
         return prijsPerWeek;
     }

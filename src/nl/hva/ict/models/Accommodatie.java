@@ -28,6 +28,10 @@ public class Accommodatie implements Identifable {
     public Accommodatie() {
     }
 
+    public Accommodatie(String accommodatieCode){
+        this.accommodatieCode = accommodatieCode;
+    }
+
     public String getAccommodatieCode() {
         return accommodatieCode;
     }

@@ -33,7 +33,8 @@ public class MySQLLodge extends MySQL<Lodge> {
     private void load() {
 
         // Voer hier je SQL code in
-        String sql = "";
+        String sql = "SELECT * FROM Lodge l " +
+                "INNER JOIN Accommodatie a on a.accommodatie_code = l.accommodatie_code ";
 
         // Als je nog geen query hebt ingevuld breek dan af om een error te voorkomen.
         if (sql.equals(""))
@@ -48,17 +49,18 @@ public class MySQLLodge extends MySQL<Lodge> {
 
             // Loop net zolang als er records zijn
             while (rs.next()) {
-                String accommodatieCode = rs.getString("accommodatieCode");
-                String naam = rs.getString("naam");
-                String stad = rs.getString("stad");
-                String land = rs.getString("land");
-                String kamer = rs.getString("kamer");
-                int personen = rs.getInt("personen");
-                double prijsPerWeek = rs.getDouble("prijsPerWeek");
+                String accommodatieCode = rs.getString("accommodatie_code");
+//                String naam = rs.getString("naam");
+//                String stad = rs.getString("stad");
+//                String land = rs.getString("land");
+//                String kamer = rs.getString("kamer");
+//                int personen = rs.getInt("persoon_aantal");
+                double prijsPerWeek = rs.getDouble("prijs_per_week");
                 boolean autohuur = rs.getBoolean("autohuur");
 
                 // Maak model aan en voeg toe aan arraylist
-                lodges.add(new Lodge(accommodatieCode, naam, stad, land, kamer, personen,prijsPerWeek, autohuur));
+//                lodges.add(new Lodge(accommodatieCode, naam, stad, land, kamer, personen,prijsPerWeek, autohuur));
+                lodges.add(new Lodge(accommodatieCode, prijsPerWeek, autohuur));
             }
         } catch (SQLException e) {
             e.printStackTrace();

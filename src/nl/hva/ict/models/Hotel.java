@@ -19,6 +19,12 @@ public class Hotel extends Accommodatie implements Identifable, Serializable {
         this.ontbijt = ontbijt;
     }
 
+    public Hotel(String accommodatieCode, double prijsPerNacht, boolean ontbijt){
+        super(accommodatieCode);
+        this.prijsPerNacht = prijsPerNacht;
+        this.ontbijt = ontbijt;
+    }
+
     public double getPrijsPerNacht() {
         return prijsPerNacht;
     }
