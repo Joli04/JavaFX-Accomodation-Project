@@ -165,9 +165,7 @@ public class MySQLBoekingsOverzicht extends MySQL<BoekingsOverzicht> {
     private String getReizigerscode(String pCode, LocalDate pDatum) {
 
        // Voer hier je eigen query in
-        String sql = "SELECT GeboektOp(accommodatie_code,aankomstdatum) reiziger_code " +
-                "FROM reservering " +
-                "WHERE accommodatie_code = ? AND aankomstdatum = ?";
+        String sql = "SELECT GeboektOp(?,?) AS reiziger_code";
 
         // default waarde
         String reizigerCode = "";
