@@ -28,14 +28,6 @@ public class Reservering implements Identifable, Serializable {
         this.reizigerscode = reizigerscode;
     }
 
-    public Reservering(int idReservering, Date aankomstDatum, Date vertrekDatum, boolean betaald, String reizigerscode) {
-        this.idReservering = idReservering;
-        this.aankomstDatum = aankomstDatum;
-        this.vertrekDatum = vertrekDatum;
-        this.betaald = betaald;
-        this.reizigerscode = reizigerscode;
-    }
-
     public Reservering() {
     }
 

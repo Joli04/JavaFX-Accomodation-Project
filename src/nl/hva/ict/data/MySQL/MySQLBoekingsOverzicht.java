@@ -99,12 +99,11 @@ public class MySQLBoekingsOverzicht extends MySQL<BoekingsOverzicht> {
         List<BoekingsOverzicht> reserveringVoor = new ArrayList<>();
 
         // Voer hier je query in
-        String sql = "SELECT res.*, acc.`naam`, acc.`stad`, acc.`land`, reiz.`voornaam`, reiz.`achternaam`, reiz.`plaats` " +
-                "FROM `reservering` AS res " +
-                "INNER JOIN `reiziger` AS reiz ON reiz.`reiziger_code` = res.`reiziger_code` " +
-                "INNER JOIN `accommodatie` AS acc ON acc.`accommodatie_code` = res.`accommodatie_code` " +
-                "WHERE res.`reiziger_code` = ?";
-
+        String sql = "SELECT `res`.*, `acc`.`naam`, `acc`.`stad`, `acc`.`land`, `reiz`.`voornaam`, `reiz`.`achternaam`, `reiz`.`plaats` " +
+                "FROM `reservering` AS `res` " +
+                "INNER JOIN `reiziger` AS `reiz` ON `reiz`.`reiziger_code` = `res`.`reiziger_code` " +
+                "INNER JOIN `accommodatie` AS `acc` ON `acc`.`accommodatie_code` = `res`.`accommodatie_code` " +
+                "WHERE `res`.`reiziger_code` = ?";
 
         try {
             // Maak je statement
@@ -166,7 +165,7 @@ public class MySQLBoekingsOverzicht extends MySQL<BoekingsOverzicht> {
     private String getReizigerscode(String pCode, LocalDate pDatum) {
 
        // Voer hier je eigen query in
-        String sql = "SELECT GeboektOp(?,?) AS reiziger_code";
+        String sql = "SELECT GeboektOp(?,?) AS `reiziger_code`";
 
 
         // default waarde
