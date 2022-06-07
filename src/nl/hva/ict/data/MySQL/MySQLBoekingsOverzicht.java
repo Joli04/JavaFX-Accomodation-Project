@@ -58,7 +58,7 @@ public class MySQLBoekingsOverzicht extends MySQL<BoekingsOverzicht> {
                 Date aankomstDatum = rs.getDate("aankomstdatum");
                 Date vertrekDatum = rs.getDate("vertrekdatum");
                 boolean betaald = rs.getBoolean("betaald");
-//                String accommodatieCode = rs.getString("accommodatie_code");
+                String accommodatieCode = rs.getString("accommodatie_code");
                 String reizerCode = rs.getString("reiziger_code");
                 String voornaam = ""; // not in use
                 String achternaam = rs.getString("reiziger"); // combine voor en achternaam
@@ -72,8 +72,8 @@ public class MySQLBoekingsOverzicht extends MySQL<BoekingsOverzicht> {
                 String accommodatieLand = rs.getString("land");
 
                 // Maak models aan
-//                Reservering reservering = new Reservering(idReservering, aankomstDatum, vertrekDatum, betaald, accommodatieCode, reizerCode);
-                Reservering reservering = new Reservering(idReservering, aankomstDatum, vertrekDatum, betaald, reizerCode);
+                Reservering reservering = new Reservering(idReservering, aankomstDatum, vertrekDatum, betaald, accommodatieCode, reizerCode);
+//                Reservering reservering = new Reservering(idReservering, aankomstDatum, vertrekDatum, betaald, reizerCode);
                 Reiziger reiziger = new Reiziger(reizerCode, voornaam, achternaam, adres, postcode, plaats, land, hoofdreiziger);
                 Accommodatie accommodatie = new Accommodatie();
                 accommodatie.setNaam(accommodatieNaam);

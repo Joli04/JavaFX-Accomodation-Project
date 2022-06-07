@@ -50,17 +50,17 @@ public class MySQLLodge extends MySQL<Lodge> {
             // Loop net zolang als er records zijn
             while (rs.next()) {
                 String accommodatieCode = rs.getString("accommodatie_code");
-//                String naam = rs.getString("naam");
-//                String stad = rs.getString("stad");
-//                String land = rs.getString("land");
-//                String kamer = rs.getString("kamer");
-//                int personen = rs.getInt("persoon_aantal");
+                String naam = rs.getString("naam");
+                String stad = rs.getString("stad");
+                String land = rs.getString("land");
+                String kamer = rs.getString("kamer");
+                int personen = rs.getInt("persoon_aantal");
                 double prijsPerWeek = rs.getDouble("prijs_per_week");
                 boolean autohuur = rs.getBoolean("autohuur");
 
                 // Maak model aan en voeg toe aan arraylist
-//                lodges.add(new Lodge(accommodatieCode, naam, stad, land, kamer, personen,prijsPerWeek, autohuur));
-                lodges.add(new Lodge(accommodatieCode, prijsPerWeek, autohuur));
+                lodges.add(new Lodge(accommodatieCode, naam, stad, land, kamer, personen,prijsPerWeek, autohuur));
+//                lodges.add(new Lodge(accommodatieCode, prijsPerWeek, autohuur));
             }
         } catch (SQLException e) {
             e.printStackTrace();

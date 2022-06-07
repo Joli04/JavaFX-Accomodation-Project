@@ -34,7 +34,8 @@ public class MySQLHotel extends MySQL<Hotel> {
     private void load() {
 
         // Voer hier je SQL code in
-        String sql = "SELECT * FROM `Hotel`";
+        String sql = "SELECT * FROM `Hotel` AS hot " +
+                "INNER JOIN `accommodatie` AS acc ON acc.`accommodatie_code` = hot.`accommodatie_code`";
 
         // Als je nog geen query hebt ingevuld breek dan af om een error te voorkomen.
         if (sql.equals(""))
@@ -51,16 +52,16 @@ public class MySQLHotel extends MySQL<Hotel> {
             // Loop net zolang als er records zijn
             while (rs.next()) {
                 String accommodatieCode = rs.getString("accommodatie_code");
-//                String naam = rs.getString("naam");
-//                String stad = rs.getString("stad");
-//                String land = rs.getString("land");
-//                String kamer = rs.getString("kamer");
-//                int personen = rs.getInt("persoon_aantal");
+                String naam = rs.getString("naam");
+                String stad = rs.getString("stad");
+                String land = rs.getString("land");
+                String kamer = rs.getString("kamer");
+                int personen = rs.getInt("persoon_aantal");
                 double prijsPerNacht = rs.getDouble("prijs_per_nacht");
                 boolean ontbijt = rs.getBoolean("ontbijt");
                 // Maak model aan en voeg toe aan arraylist
-//                hotels.add(new Hotel(accommodatieCode, naam, stad, land, kamer, personen, prijsPerNacht, ontbijt));
-                hotels.add(new Hotel(accommodatieCode, prijsPerNacht, ontbijt));
+                hotels.add(new Hotel(accommodatieCode, naam, stad, land, kamer, personen, prijsPerNacht, ontbijt));
+//                hotels.add(new Hotel(accommodatieCode, prijsPerNacht, ontbijt));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -111,7 +112,7 @@ public class MySQLHotel extends MySQL<Hotel> {
     public void remove(Hotel object) {
 
         // Voer hier je SQL code in
-        String sql = "";
+        String sql = "CALL verwijderAccommodatie(?)";
 
         // Als er geen object is wordt de methode afgebroken
         if (object == null)
