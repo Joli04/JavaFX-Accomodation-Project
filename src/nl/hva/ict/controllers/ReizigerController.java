@@ -2,6 +2,7 @@ package nl.hva.ict.controllers;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import nl.hva.ict.Main;
 import nl.hva.ict.MainApplication;
 import nl.hva.ict.models.Reiziger;
 import nl.hva.ict.views.ReizigersView;
@@ -46,14 +47,24 @@ public class ReizigerController extends Controller {
 
     private void save() {
         // bewaar (update) record
+        Reiziger reiziger = reizigersView.getReizigersViewListView().getSelectionModel().getSelectedItem();
+        MainApplication.getMongoDBReizigers().update(reiziger);
     }
 
     private void delete() {
         // delete dit record
+        Reiziger reiziger = reizigersView.getReizigersViewListView().getSelectionModel().getSelectedItem();
+        MainApplication.getMongoDBReizigers().remove(reiziger);
     }
 
     private void insert() {
         //Voeg toe
+        // alle velden opvragen
+
+        Reiziger reiziger = new Reiziger(reizigersView.getTxtReizigersCode().getText(),reizigersView.getTxtVoornaam().getText(),
+                reizigersView.getTxtAchternaam().getText(),reizigersView.getTxtAdres().getText(), reizigersView.getTxtPostcode().getText(),
+                reizigersView.getTxtPlaats().getText(),reizigersView.getTxtLand().getText(), reizigersView.getTxtReizigersCode().getText());
+        MainApplication.getMongoDBReizigers().add(reiziger);
     }
 
     private void getItemsInFields() {

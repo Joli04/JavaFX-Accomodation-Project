@@ -5,9 +5,11 @@ import nl.hva.ict.MainApplication;
 import nl.hva.ict.models.Landen;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import static com.mongodb.client.model.Aggregates.match;
 import static com.mongodb.client.model.Filters.eq;
 
@@ -29,6 +31,7 @@ public class MongoLandeninformatie extends MongoDB {
 
     /**
      * Haal alle landen op die in de arraylijst zitten
+     *
      * @return arraylijst met landen
      */
     @Override
@@ -38,6 +41,7 @@ public class MongoLandeninformatie extends MongoDB {
 
     /**
      * Haal 1 object op. Niet gebruikt in deze class maar door de interface data wel verplicht
+     *
      * @return een object
      */
     @Override
@@ -72,12 +76,13 @@ public class MongoLandeninformatie extends MongoDB {
     /**
      * Haal alle informatie op uit de NoSQL server over welke landen een bepaalde taal spreken. Gebruik hiervoor aggregation.
      * Zet het resultaat in de arraylist
-     * @param taal Welke taal wil je weten
+     *
+     * @param taal         Welke taal wil je weten
      * @param alleenAfrika filter het resultaat zodat wel of niet alleen afrikaanse landen terug komen
      */
     public void wieSpreekt(String taal, boolean alleenAfrika) {
 
-       // Als je geen NoSQL server hebt opgegeven gaat de methode niet verder anders zou je een nullpointer krijgen
+        // Als je geen NoSQL server hebt opgegeven gaat de methode niet verder anders zou je een nullpointer krijgen
         if (MainApplication.getNosqlHost().equals(""))
             return;
 
@@ -90,32 +95,107 @@ public class MongoLandeninformatie extends MongoDB {
         // Aggregation functie in Mongo
         Bson match = match(eq("languages.name", taal));
 
+
+        if (alleenAfrika) {
+            Bson checkAfrika = match(eq("region", "Africa"));
+            List<Document> resultAfrika = collection.aggregate(Arrays.asList(checkAfrika))
+                    .into(new ArrayList<>());
+            for (Document land : resultAfrika) {
+                this.landen.add(new Landen(land.get("name").toString(), land.get("capital").toString()));
+
+            }
+        }
+
+
         List<Document> results = collection.aggregate(Arrays.asList(match))
                 .into(new ArrayList<>());
+
 
         // Maak models en voeg resultaat toe aan arraylist
         for (Document land : results) {
             this.landen.add(new Landen(land.get("name").toString(), land.get("capital").toString()));
 
         }
+
+
     }
 
     /**
      * Haal alle informatie op uit de NoSQL server in welke landen je met een bepaalde valuta kan betalen. Gebruik hiervoor aggregation.
      * Zet het resultaat in de arraylist
-     * @param valuta Welke valuta wil je weten
+     *
+     * @param valuta       Welke valuta wil je weten
      * @param alleenAfrika filter het resultaat zodat wel of niet alleen afrikaanse landen terug komen
      */
     public void waarBetaalJeMet(String valuta, boolean alleenAfrika) {
+        // Als je geen NoSQL server hebt opgegeven gaat de methode niet verder anders zou je een nullpointer krijgen
+        if (MainApplication.getNosqlHost().equals(""))
+            return;
+
+        // reset arraylist
+        this.landen.clear();
+
+        // selecteer collection
+        this.selectedCollection("landen");
+
+        Bson matchValuta = match(eq("currencies.name", valuta));
+
+        List<Document> results = collection.aggregate(Arrays.asList(matchValuta))
+                .into(new ArrayList<>());
+
+
+        // Maak models en voeg resultaat toe aan arraylist
+        for (Document land : results) {
+            this.landen.add(new Landen(land.get("name").toString(), land.get("capital").toString()));
+
+        }
+
+        if (alleenAfrika) {
+            Bson checkAfrika = match(eq("region", "Africa"));
+            List<Document> resultAfrika = collection.aggregate(Arrays.asList(checkAfrika))
+                    .into(new ArrayList<>());
+            for (Document land : resultAfrika) {
+                this.landen.add(new Landen(land.get("name").toString(), land.get("capital").toString()));
+            }
+        }
     }
 
     /**
      * Welke landen zijn er in welk werelddeel. Haal deze informatie uit de database
      * . Gebruik hiervoor aggregation.
      * Zet het resultaat in de arraylist
+     *
      * @param werelddeel Welke valuta wil je weten
      */
     public void welkeLandenZijnErIn(String werelddeel) {
+        // Als je geen NoSQL server hebt opgegeven gaat de methode niet verder anders zou je een nullpointer krijgen
+        if (MainApplication.getNosqlHost().equals(""))
+            return;
+
+        // reset arraylist
+        this.landen.clear();
+
+        // selecteer collection
+        this.selectedCollection("landen");
+
+        Bson matchSubregion = match(eq("subregion", werelddeel));
+
+        Bson matchRegion = match(eq("region", werelddeel));
+
+        List<Document> resultsSubregion = collection.aggregate(Arrays.asList(matchSubregion))
+                .into(new ArrayList<>());
+
+        List<Document> resultsRegion = collection.aggregate(Arrays.asList(matchRegion))
+                .into(new ArrayList<>());
+
+        // Maak models en voeg resultaat toe aan arraylist
+        for (Document land : resultsRegion) {
+            this.landen.add(new Landen(land.get("name").toString(), land.get("capital").toString()));
+        }
+
+        for (Document land : resultsSubregion) {
+            this.landen.add(new Landen(land.get("name").toString(), land.get("capital").toString()));
+        }
     }
 
     /**
@@ -125,6 +205,7 @@ public class MongoLandeninformatie extends MongoDB {
         // reset arraylist
         this.landen.clear();
 
+//
         // Om geen compile error te krijgen wordt tijdelijk 0 teruggegeven.
         return 0;
     }

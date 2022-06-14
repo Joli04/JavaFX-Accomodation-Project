@@ -1,5 +1,6 @@
 package nl.hva.ict.models;
 
+import javafx.scene.control.TextField;
 import nl.hva.ict.data.Identifable;
 
 import java.io.Serializable;
