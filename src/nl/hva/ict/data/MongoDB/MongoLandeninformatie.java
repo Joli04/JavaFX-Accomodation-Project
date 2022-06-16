@@ -1,5 +1,6 @@
 package nl.hva.ict.data.MongoDB;
 
+import com.mongodb.client.model.Accumulators;
 import com.mongodb.client.model.Aggregates;
 import nl.hva.ict.MainApplication;
 import nl.hva.ict.models.Landen;
@@ -20,6 +21,7 @@ import static com.mongodb.client.model.Filters.eq;
 public class MongoLandeninformatie extends MongoDB {
 
     private final List<Landen> landen;
+    private List<Document> results;
 
     /**
      * Constructor
@@ -74,6 +76,30 @@ public class MongoLandeninformatie extends MongoDB {
     }
 
     /**
+     * Method voor een check of het 'alleenAfrika' is aangevinkt
+     * @param alleenAfrika boolean, aangevinkt of niet
+     * @param match Bson, de Mongo match
+     */
+    private void alleenInAfrikaMethod(boolean alleenAfrika, Bson match) {
+        Bson checkAfrica = match(eq("region", "Africa"));
+
+        if (alleenAfrika) {
+            // results: gesproken taal en in Afrika
+            results = collection.aggregate(Arrays.asList(checkAfrica, match))
+                    .into(new ArrayList<>());
+        } else {
+            // results: gesproken taal
+            results = collection.aggregate(Arrays.asList(match))
+                    .into(new ArrayList<>());
+        }
+
+        // Loop door de resultaten
+        for (Document land : results) {
+            this.landen.add(new Landen(land.get("name").toString(), land.get("capital").toString()));
+        }
+    }
+
+    /**
      * Haal alle informatie op uit de NoSQL server over welke landen een bepaalde taal spreken. Gebruik hiervoor aggregation.
      * Zet het resultaat in de arraylist
      *
@@ -81,7 +107,6 @@ public class MongoLandeninformatie extends MongoDB {
      * @param alleenAfrika filter het resultaat zodat wel of niet alleen afrikaanse landen terug komen
      */
     public void wieSpreekt(String taal, boolean alleenAfrika) {
-
         // Als je geen NoSQL server hebt opgegeven gaat de methode niet verder anders zou je een nullpointer krijgen
         if (MainApplication.getNosqlHost().equals(""))
             return;
@@ -95,29 +120,7 @@ public class MongoLandeninformatie extends MongoDB {
         // Aggregation functie in Mongo
         Bson match = match(eq("languages.name", taal));
 
-
-        if (alleenAfrika) {
-            Bson checkAfrika = match(eq("region", "Africa"));
-            List<Document> resultAfrika = collection.aggregate(Arrays.asList(checkAfrika))
-                    .into(new ArrayList<>());
-            for (Document land : resultAfrika) {
-                this.landen.add(new Landen(land.get("name").toString(), land.get("capital").toString()));
-
-            }
-        }
-
-
-        List<Document> results = collection.aggregate(Arrays.asList(match))
-                .into(new ArrayList<>());
-
-
-        // Maak models en voeg resultaat toe aan arraylist
-        for (Document land : results) {
-            this.landen.add(new Landen(land.get("name").toString(), land.get("capital").toString()));
-
-        }
-
-
+        alleenInAfrikaMethod(alleenAfrika, match);
     }
 
     /**
@@ -140,24 +143,7 @@ public class MongoLandeninformatie extends MongoDB {
 
         Bson matchValuta = match(eq("currencies.name", valuta));
 
-        List<Document> results = collection.aggregate(Arrays.asList(matchValuta))
-                .into(new ArrayList<>());
-
-
-        // Maak models en voeg resultaat toe aan arraylist
-        for (Document land : results) {
-            this.landen.add(new Landen(land.get("name").toString(), land.get("capital").toString()));
-
-        }
-
-        if (alleenAfrika) {
-            Bson checkAfrika = match(eq("region", "Africa"));
-            List<Document> resultAfrika = collection.aggregate(Arrays.asList(checkAfrika))
-                    .into(new ArrayList<>());
-            for (Document land : resultAfrika) {
-                this.landen.add(new Landen(land.get("name").toString(), land.get("capital").toString()));
-            }
-        }
+        alleenInAfrikaMethod(alleenAfrika, matchValuta);
     }
 
     /**
@@ -175,6 +161,8 @@ public class MongoLandeninformatie extends MongoDB {
         // reset arraylist
         this.landen.clear();
 
+        this.results.clear();
+
         // selecteer collection
         this.selectedCollection("landen");
 
@@ -182,18 +170,17 @@ public class MongoLandeninformatie extends MongoDB {
 
         Bson matchRegion = match(eq("region", werelddeel));
 
-        List<Document> resultsSubregion = collection.aggregate(Arrays.asList(matchSubregion))
-                .into(new ArrayList<>());
+        results = collection.aggregate(Arrays.asList(matchSubregion))
+                        .into(new ArrayList<>());
 
-        List<Document> resultsRegion = collection.aggregate(Arrays.asList(matchRegion))
-                .into(new ArrayList<>());
-
-        // Maak models en voeg resultaat toe aan arraylist
-        for (Document land : resultsRegion) {
-            this.landen.add(new Landen(land.get("name").toString(), land.get("capital").toString()));
+        // check of list leeg is
+        if (results.size() == 0) {
+            results = collection.aggregate(Arrays.asList(matchRegion))
+                    .into(new ArrayList<>());
         }
 
-        for (Document land : resultsSubregion) {
+        // Maak models en voeg resultaat toe aan arraylist
+        for (Document land : results) {
             this.landen.add(new Landen(land.get("name").toString(), land.get("capital").toString()));
         }
     }
@@ -205,8 +192,12 @@ public class MongoLandeninformatie extends MongoDB {
         // reset arraylist
         this.landen.clear();
 
-//
-        // Om geen compile error te krijgen wordt tijdelijk 0 teruggegeven.
-        return 0;
+        // selecteer collection
+        this.selectedCollection("landen");
+
+        Bson match = match(eq("subregion", "Eastern Africa"));
+        Bson group = Aggregates.group("subregion", Accumulators.sum("sum", "$population"));
+
+        return collection.aggregate(Arrays.asList(match, group)).first().getInteger("sum");
     }
 }
